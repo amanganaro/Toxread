@@ -24,7 +24,7 @@ public class PrepareDatabase {
          p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("C:\\Users\\Alberto\\Desktop\\Nuova cartella\\db_toxread_prova.dat");
+        p.CloseAndSave("db_toxread_prova.dat");
         p.DbSummary();
     }
 

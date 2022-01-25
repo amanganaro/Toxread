@@ -50,7 +50,7 @@ public class RaGUIApplication extends JFrame {
 //    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
     private final static String DB_FILE = "/vega-db/db_toxread_prova.dat";
 
-    private final static boolean LOAD_FROM_SERIALIZED_FILE = false;
+    private final static boolean LOAD_FROM_SERIALIZED_FILE = true;
 
     
     /**

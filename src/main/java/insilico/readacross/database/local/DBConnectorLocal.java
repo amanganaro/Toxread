@@ -41,8 +41,11 @@ public class DBConnectorLocal implements iDBConnector {
         
         // Load from serialized data file
         if (Params.containsKey(CONN_PARAM_INPUT_SERIAL)) {
-            InputStream url = this.getClass().getResourceAsStream(Params.get(CONN_PARAM_INPUT_SERIAL));
-            ObjectInputStream in = new ObjectInputStream(url);
+//            InputStream url = this.getClass().getResourceAsStream(Params.get(CONN_PARAM_INPUT_SERIAL));
+//            URL uDB = getClass().getResource("/vega-db/db_toxread_prova.dat");
+            URL uDB = getClass().getResource(Params.get(CONN_PARAM_INPUT_SERIAL));
+
+            ObjectInputStream in = new ObjectInputStream(uDB.openStream());
             LocalDataContainer readData = (LocalDataContainer) in.readObject();
             in.close();
             this.Data = readData;

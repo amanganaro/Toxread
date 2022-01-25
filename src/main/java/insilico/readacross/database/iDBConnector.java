@@ -24,11 +24,13 @@ public interface iDBConnector {
     // Also the database id in the db object is updated with the db id.
     //
     abstract public long InsertMolecule(dbMolecule molecule) throws Exception;
+    abstract public long InsertMoleculeNoAutoId(dbMolecule molecule) throws Exception;
     abstract public long InsertStructure(dbStructure struct) throws Exception;
     abstract public long InsertDatatype(dbDataType type) throws Exception;
     abstract public long InsertValue(dbValue value) throws Exception;
     abstract public long InsertReference(dbReference reference) throws Exception;
     abstract public long InsertEndpoint(dbEndpoint endpoint) throws Exception;
+    abstract public long InsertEndpointNoAutoId(dbEndpoint endpoint) throws Exception;
     abstract public long InsertDataset(dbDataset dataset) throws Exception;
     
     //

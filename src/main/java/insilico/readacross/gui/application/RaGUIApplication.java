@@ -45,8 +45,9 @@ public class RaGUIApplication extends JFrame {
 
     private iDBConnector DBConn;
     private final static String VERSION = "BETA 0.23";
-    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
-    
+//    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
+    private final static String DB_FILE = "/vega-db/db_toxread_prova.dat";
+
     
     /**
      * Creates new form RaTestApplication

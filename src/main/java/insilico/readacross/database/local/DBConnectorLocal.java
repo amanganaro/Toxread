@@ -66,7 +66,9 @@ public class DBConnectorLocal implements iDBConnector {
         
         // Save to serialized file
         if (Params.containsKey(CONN_PARAM_OUTPUT_SERIAL)) {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(Params.get(CONN_PARAM_OUTPUT_SERIAL)));
+            File dest = new File(Params.get(CONN_PARAM_OUTPUT_SERIAL));
+            dest.createNewFile();
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(dest));
             out.writeObject(Data);
             out.close();
         }        
@@ -77,7 +79,7 @@ public class DBConnectorLocal implements iDBConnector {
     
     
     ////// Access to single objects
-    
+
     @Override
     public long InsertMolecule(dbMolecule molecule) throws Exception {
         long nextId = 0;
@@ -85,6 +87,12 @@ public class DBConnectorLocal implements iDBConnector {
         molecule.Id = ++nextId;
         Data.Molecules.add(molecule);
         return nextId;
+    }
+
+    @Override
+    public long InsertMoleculeNoAutoId(dbMolecule molecule) throws Exception {
+        Data.Molecules.add(molecule);
+        return molecule.Id;
     }
 
     @Override
@@ -126,6 +134,12 @@ public class DBConnectorLocal implements iDBConnector {
         endpoint.Id = ++nextId;
         Data.Endpoints.add(endpoint);
         return nextId;
+    }
+
+    @Override
+    public long InsertEndpointNoAutoId(dbEndpoint endpoint) throws Exception {
+        Data.Endpoints.add(endpoint);
+        return endpoint.Id;
     }
 
     @Override
@@ -215,7 +229,7 @@ public class DBConnectorLocal implements iDBConnector {
 
     @Override
     public ArrayList<dbValue> GetAllValues() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.Data.Values;
     }
 
     @Override

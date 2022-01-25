@@ -28,6 +28,8 @@ import insilico.readacross.calculation.endpoints.RaEndpointReprotox;
 import insilico.readacross.calculation.endpoints.RaEndpointSkinSensitization;
 import insilico.readacross.messagelogger.RaMessageLogger;
 import insilico.readacross.type.objects.RaResultsContainer;
+import insilico.readacross.utils.PrepareDatabase;
+
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.util.ArrayList;
@@ -47,6 +49,8 @@ public class RaGUIApplication extends JFrame {
     private final static String VERSION = "BETA 0.23";
 //    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
     private final static String DB_FILE = "/vega-db/db_toxread_prova.dat";
+
+    private final static boolean LOAD_FROM_SERIALIZED_FILE = false;
 
     
     /**
@@ -79,10 +83,21 @@ public class RaGUIApplication extends JFrame {
         RaMessageLogger.getLogger().SetOutputStreamForComponent(jTextAreaLog);
         RaMessageLogger.getLogger().SendMessage("Initializing database...");
         try {
-            DBConn = new DBConnectorLocal();
-            HashMap<String, String> p = new HashMap<>();
-            p.put(DBConnectorLocal.CONN_PARAM_INPUT_SERIAL, DB_FILE);
-            DBConn.Connect(p);
+
+            if (LOAD_FROM_SERIALIZED_FILE) {
+
+                DBConn = new DBConnectorLocal();
+                HashMap<String, String> p = new HashMap<>();
+                p.put(DBConnectorLocal.CONN_PARAM_INPUT_SERIAL, DB_FILE);
+                DBConn.Connect(p);
+
+            } else {
+
+                PrepareDatabase prepDB = new PrepareDatabase();
+                prepDB.BuildDatabase();
+                DBConn = prepDB.db;
+            }
+
             RaMessageLogger.getLogger().SendMessage("Database correctly initialized.");
         } catch (Exception e) {
             RaMessageLogger.getLogger().SendMessage("Unable to open database - " + e.getMessage());

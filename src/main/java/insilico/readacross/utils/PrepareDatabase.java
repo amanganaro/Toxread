@@ -20,16 +20,8 @@ public class PrepareDatabase {
 
     public static void main(String args[]) throws Exception {
         PrepareDatabase p = new PrepareDatabase();
-        RaEndpoint ep = new RaEndpointSkinSensitization(p.db);
-        ArrayList<iAlertBlock> alerts = new ArrayList<>();
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
 
-        p.DbSummary();
-        System.out.println("-----");
-
-        p.AddEndpointData(ep);
-        p.UpdateAllAlerts(alerts);
+         p.BuildDatabase();
 
         System.out.println("-----");
         p.CloseAndSave("C:\\Users\\Alberto\\Desktop\\Nuova cartella\\db_toxread_prova.dat");
@@ -42,6 +34,18 @@ public class PrepareDatabase {
     public PrepareDatabase() throws Exception {
         db = new DBConnectorLocal();
         db.Connect(new HashMap<>());
+    }
+
+    public void BuildDatabase() throws Exception {
+        RaEndpoint ep;
+        ArrayList<iAlertBlock> alerts = new ArrayList<>();
+
+        ep = new RaEndpointSkinSensitization(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        UpdateAllAlerts(alerts);
     }
 
     public void DbSummary() throws Exception{

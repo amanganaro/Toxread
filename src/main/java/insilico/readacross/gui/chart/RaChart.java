@@ -200,12 +200,12 @@ public class RaChart implements Serializable {
         targetInfosPanel.setText(TargetInfo);
         
         // Init icons
-        plusIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/plus2.png"));
-        minusIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/minus2.png"));
-        interpolationIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/graph.png"));
-        zoomPlusIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/plus4.png"));
-        zoomMinusIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/minus4.png"));
-        zoomResetIco = new ImageIcon(getClass().getResource("/insilico/readacross/gui/images/reset5.png"));
+        plusIco = new ImageIcon(getClass().getResource("/images/plus2.png"));
+        minusIco = new ImageIcon(getClass().getResource("/images/minus2.png"));
+        interpolationIco = new ImageIcon(getClass().getResource("/images/graph.png"));
+        zoomPlusIco = new ImageIcon(getClass().getResource("/images/plus4.png"));
+        zoomMinusIco = new ImageIcon(getClass().getResource("/images/minus4.png"));
+        zoomResetIco = new ImageIcon(getClass().getResource("/images/reset5.png"));
         
         
     }

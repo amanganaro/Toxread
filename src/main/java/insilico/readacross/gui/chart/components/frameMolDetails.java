@@ -47,9 +47,9 @@ public class frameMolDetails extends javax.swing.JFrame {
         jTextAreaInfo.setText("");
         String MolName, MolCAS, MolSMILES, MolExp, MolAllExp;
         MolName = SimMolObj.getMolecule().CommonName;
-        MolName = (MolName.isEmpty() ? "(no name)" : MolName);
+        MolName = ((MolName == null || MolName.isEmpty()) ? "(no name)" : MolName);
         MolCAS = SimMolObj.getMolecule().CAS;
-        MolCAS = (MolCAS.isEmpty() ? "(no name)" : MolCAS);
+        MolCAS = ((MolCAS == null || MolCAS.isEmpty()) ? "(no name)" : MolCAS);
         try {
             dbStructure st = DBConn.GetStructure(SimMolObj.getMolecule().Id);
             MolSMILES = st.SMILES;

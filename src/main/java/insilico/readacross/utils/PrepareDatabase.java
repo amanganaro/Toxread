@@ -2,10 +2,12 @@ package insilico.readacross.utils;
 
 import insilico.core.alerts.AlertEncoding;
 import insilico.core.alerts.AlertList;
+import insilico.core.alerts.builders.SAMutagenCRS4;
 import insilico.core.alerts.iAlertBlock;
 import insilico.core.molecule.InsilicoMolecule;
 import insilico.core.molecule.conversion.SmilesMolecule;
 import insilico.readacross.calculation.endpoints.RaEndpoint;
+import insilico.readacross.calculation.endpoints.RaEndpointMutagenicity;
 import insilico.readacross.calculation.endpoints.RaEndpointSkinSensitization;
 import insilico.readacross.database.local.DBConnectorLocal;
 import insilico.readacross.database.objects.dbEndpoint;
@@ -21,10 +23,10 @@ public class PrepareDatabase {
     public static void main(String args[]) throws Exception {
         PrepareDatabase p = new PrepareDatabase();
 
-         p.BuildDatabase();
+        p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("C:\\Users\\Alberto\\Desktop\\Nuova cartella\\db_toxread_prova.dat");
+        p.CloseAndSave("C:\\Users\\Alberto\\Desktop\\Nuova cartella\\db_toxread_prova_2.dat");
         p.DbSummary();
     }
 
@@ -39,6 +41,14 @@ public class PrepareDatabase {
     public void BuildDatabase() throws Exception {
         RaEndpoint ep;
         ArrayList<iAlertBlock> alerts = new ArrayList<>();
+
+        ep = new RaEndpointMutagenicity(db);
+        for (iAlertBlock a : ep.getAlertBlocks()) {
+            // TODO - sistemare
+            if (a.getClass() != SAMutagenCRS4.class)
+                alerts.add(a);
+        }
+        AddEndpointData(ep);
 
         ep = new RaEndpointSkinSensitization(db);
         for (iAlertBlock a : ep.getAlertBlocks())

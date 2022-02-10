@@ -65,7 +65,9 @@ public class RaEndpointMutagenicity extends RaEndpoint {
     
     public RaEndpointMutagenicity(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Mutagenicity");
-        
+
+        this.DatasetTextFile = "/data/ds_mutagenicity.txt";
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -78,7 +80,7 @@ public class RaEndpointMutagenicity extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(DB_VALUE_TYPE_MUTAGENICITY);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

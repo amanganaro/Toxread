@@ -11,6 +11,8 @@ import java.util.ArrayList;
  */
 public class LocalDataContainer implements Serializable {
 
+        private static final long serialVersionUID = 1L;
+
         public ArrayList<dbDataType> Datatypes;
         public ArrayList<dbDataset> Datasets;
         public ArrayList<dbEndpoint> Endpoints;

@@ -36,7 +36,9 @@ public class RaEndpointHepatotox extends RaEndpoint {
     
     public RaEndpointHepatotox(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Hepatotoxicity");
-        
+
+        this.DatasetTextFile = "/data/ds_hepatotox.txt";
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -45,7 +47,7 @@ public class RaEndpointHepatotox extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_HEPATOTOX);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

@@ -47,6 +47,10 @@ public class RaEndpointAlgaeCombase extends RaEndpoint {
     
     public RaEndpointAlgaeCombase(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Algae");
+
+        this.DatasetTextFile = "/data/ds_algae_combase.txt";
+
+
         Interpolation = false;
 
         LogP = new MeylanLogP();
@@ -62,7 +66,7 @@ public class RaEndpointAlgaeCombase extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_ALGAE_COMBASE);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }        
     }
     

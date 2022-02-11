@@ -37,7 +37,9 @@ public class RaEndpointReprotox extends RaEndpoint {
     
     public RaEndpointReprotox(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Reproductive Toxicity");
-        
+
+        this.DatasetTextFile = "/data/ds_reprotox.txt";
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -46,7 +48,7 @@ public class RaEndpointReprotox extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_REPROTOX);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

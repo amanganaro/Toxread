@@ -36,7 +36,10 @@ public class RaEndpointCarcinogenicityCGX extends RaEndpoint {
     
     public RaEndpointCarcinogenicityCGX(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Carcinogenicity (CGX)");
-        
+
+        this.DatasetTextFile = "/data/ds_carcinogenicity_cgx.txt";
+
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -45,7 +48,7 @@ public class RaEndpointCarcinogenicityCGX extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_CGX_VERMEER);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

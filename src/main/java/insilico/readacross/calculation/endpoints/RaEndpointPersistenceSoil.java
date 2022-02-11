@@ -36,7 +36,9 @@ public class RaEndpointPersistenceSoil extends RaEndpoint {
     
     public RaEndpointPersistenceSoil(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Persistence (soil)");
-        
+
+        this.DatasetTextFile = "/data/ds_persistence_soil.txt";
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -45,7 +47,7 @@ public class RaEndpointPersistenceSoil extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_PERS_SOIL);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

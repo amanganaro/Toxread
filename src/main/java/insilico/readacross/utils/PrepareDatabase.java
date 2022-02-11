@@ -2,13 +2,12 @@ package insilico.readacross.utils;
 
 import insilico.core.alerts.AlertEncoding;
 import insilico.core.alerts.AlertList;
+import insilico.core.alerts.builders.SABCFIRFMNThreshold;
 import insilico.core.alerts.builders.SAMutagenCRS4;
 import insilico.core.alerts.iAlertBlock;
 import insilico.core.molecule.InsilicoMolecule;
 import insilico.core.molecule.conversion.SmilesMolecule;
-import insilico.readacross.calculation.endpoints.RaEndpoint;
-import insilico.readacross.calculation.endpoints.RaEndpointMutagenicity;
-import insilico.readacross.calculation.endpoints.RaEndpointSkinSensitization;
+import insilico.readacross.calculation.endpoints.*;
 import insilico.readacross.database.local.DBConnectorLocal;
 import insilico.readacross.database.objects.dbEndpoint;
 import insilico.readacross.database.objects.dbMolecule;
@@ -26,7 +25,7 @@ public class PrepareDatabase {
         p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("C:\\Users\\Alberto\\Desktop\\Nuova cartella\\db_toxread_prova_2.dat");
+        p.CloseAndSave("db_toxread_prova_3.dat");
         p.DbSummary();
     }
 
@@ -54,6 +53,71 @@ public class PrepareDatabase {
         for (iAlertBlock a : ep.getAlertBlocks())
             alerts.add(a);
         AddEndpointData(ep);
+
+        ep = new RaEndpointAlgaeCombase(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointBCF(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            // TODO - sistemare
+//            if (a.getClass() != SABCFIRFMNThreshold.class)
+            alerts.add(a);
+
+
+        ep = new RaEndpointCarcinogenicityCGX(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointHepatotox(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointMicrobesCombase(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointMicronucleus(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointNephrotox(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointPersistenceSediment(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointPersistenceSoil(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointPersistenceWater(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointReadyBiodegradability(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointReprotox(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+
+
 
         UpdateAllAlerts(alerts);
     }

@@ -37,7 +37,10 @@ public class RaEndpointNephrotox extends RaEndpoint {
     
     public RaEndpointNephrotox(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Nephrototoxicity");
-        
+
+        this.DatasetTextFile = "/data/ds_nephrotox.txt";
+
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -46,7 +49,7 @@ public class RaEndpointNephrotox extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_NEPHROTOX);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

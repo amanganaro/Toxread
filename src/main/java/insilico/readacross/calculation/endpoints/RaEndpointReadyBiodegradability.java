@@ -36,7 +36,9 @@ public class RaEndpointReadyBiodegradability extends RaEndpoint {
     
     public RaEndpointReadyBiodegradability(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "Ready Biodegradability");
-        
+
+        this.DatasetTextFile = "/data/ds_ready_bio_degradability.txt";
+
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
@@ -45,7 +47,7 @@ public class RaEndpointReadyBiodegradability extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_READY_BIO);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }
     }
     

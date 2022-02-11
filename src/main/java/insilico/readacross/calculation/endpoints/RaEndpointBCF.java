@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static insilico.readacross.calculation.RaEngine.DB_VALUE_TYPE_BCF;
+import static insilico.readacross.calculation.RaEngine.DB_VALUE_TYPE_MUTAGENICITY;
+
 /**
  *
  * @author User
@@ -43,11 +46,15 @@ public class RaEndpointBCF extends RaEndpoint {
     private final DecimalFormat Df3digits;
     
     private final MeylanLogP LogP;
-    
-    
-    
+
+    private dbDataType EndpointDataType;
+
+
     public RaEndpointBCF(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "BCF");
+
+        this.DatasetTextFile = "/data/ds_bcf.txt";
+
         Interpolation = true;
 
         LogP = new MeylanLogP();
@@ -58,6 +65,13 @@ public class RaEndpointBCF extends RaEndpoint {
         InternationalSymbols.setDecimalSeparator('.');         
         Df2digits = new DecimalFormat("0.##", InternationalSymbols);
         Df3digits = new DecimalFormat("0.###", InternationalSymbols);
+
+        try {
+            ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(DB_VALUE_TYPE_BCF);
+            EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
+        } catch (Exception e) {
+            System.err.println("Unable to init data type");
+        }
         
     }
     

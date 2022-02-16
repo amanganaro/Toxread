@@ -366,7 +366,7 @@ public class RaEngine {
             AddParentRules(newRule, alerts, DS, endpoint);
             Connector.addChildren(newRule);
         }
-        
+
         // At the end, check if the connector node is populated with some
         // rules, in this case it is added to the current rule
         if (Connector.getChildrenSize() > 0)

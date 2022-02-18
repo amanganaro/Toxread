@@ -48,6 +48,9 @@ public class RaEndpointDaphniaVermeer extends RaEndpoint {
         super(DBconn, "Daphnia Magna");
         Interpolation = false;
 
+        this.DatasetTextFile = "/data/ds_daphnia_vermeer.txt";
+
+
         LogP = new MeylanLogP();
         
         Gradient = new RaColorGradient(new Color(0,255,0), Color.YELLOW, new Color(255,0, 0), (Math.pow(10, DAP_MAX) + " mg/L"), (Math.pow(10, DAP_MID) + " mg/L"), (Math.pow(10, DAP_MIN) + " mg/L"));
@@ -61,7 +64,7 @@ public class RaEndpointDaphniaVermeer extends RaEndpoint {
             ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_FISH_VERMEER);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
-            throw new InitFailureException("Unable to init data type");
+            System.err.println("Unable to init data type");
         }        
     }
     

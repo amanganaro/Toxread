@@ -45,7 +45,7 @@ public class RaEndpointLogP extends RaEndpoint {
     public RaEndpointLogP(iDBConnector DBconn) throws InitFailureException {
         super(DBconn, "LogP");
 
-        this.DatasetTextFile = "/data/ds_logP.txt";
+        this.DatasetTextFile = "/data/ds_logp.txt";
 
         DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
         InternationalSymbols.setDecimalSeparator('.');
@@ -62,7 +62,8 @@ public class RaEndpointLogP extends RaEndpoint {
     
     @Override
     protected void BuildAlertBlocks() throws InitFailureException {
-                
+        this.AlertBlocks = new iAlertBlock[0];
+        this.AlertBlockEnabled = new boolean[0];
     }
 
     

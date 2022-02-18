@@ -5,13 +5,20 @@ import insilico.core.alerts.AlertList;
 import insilico.core.alerts.builders.SABCFIRFMNThreshold;
 import insilico.core.alerts.builders.SAMutagenCRS4;
 import insilico.core.alerts.iAlertBlock;
+import insilico.core.descriptor.Descriptor;
+import insilico.core.descriptor.blocks.Constitutional;
+import insilico.core.exception.DescriptorNotFoundException;
 import insilico.core.molecule.InsilicoMolecule;
 import insilico.core.molecule.conversion.SmilesMolecule;
+import insilico.readacross.calculation.RaEngine;
 import insilico.readacross.calculation.endpoints.*;
+import insilico.readacross.calculation.endpoints.utils.MeylanLogP;
 import insilico.readacross.database.local.DBConnectorLocal;
 import insilico.readacross.database.objects.dbEndpoint;
 import insilico.readacross.database.objects.dbMolecule;
 import insilico.readacross.database.objects.dbStructure;
+import insilico.readacross.database.objects.dbValue;
+import insilico.readacross.type.objects.RaAdditionalValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +32,7 @@ public class PrepareDatabase {
         p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("db_toxread_prova_3.dat");
+        p.CloseAndSave("db_toxread_prova_4.dat");
         p.DbSummary();
     }
 
@@ -43,8 +50,6 @@ public class PrepareDatabase {
 
         ep = new RaEndpointMutagenicity(db);
         for (iAlertBlock a : ep.getAlertBlocks()) {
-            // TODO - sistemare
-            if (a.getClass() != SAMutagenCRS4.class)
                 alerts.add(a);
         }
         AddEndpointData(ep);
@@ -58,13 +63,6 @@ public class PrepareDatabase {
         for (iAlertBlock a : ep.getAlertBlocks())
             alerts.add(a);
         AddEndpointData(ep);
-
-        ep = new RaEndpointBCF(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            // TODO - sistemare
-//            if (a.getClass() != SABCFIRFMNThreshold.class)
-            alerts.add(a);
-
 
         ep = new RaEndpointCarcinogenicityCGX(db);
         for (iAlertBlock a : ep.getAlertBlocks())
@@ -116,6 +114,15 @@ public class PrepareDatabase {
             alerts.add(a);
         AddEndpointData(ep);
 
+        ep = new RaEndpointLogP(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointBCF(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
 
 
 
@@ -137,6 +144,9 @@ public class PrepareDatabase {
 
     public void UpdateAllAlerts(ArrayList<iAlertBlock> blocks) throws Exception {
 
+        MeylanLogP LogPDesc = new MeylanLogP();
+
+
         for (iAlertBlock AB : blocks) {
             System.out.println("* processing alerts for: " + AB.getName());
 
@@ -144,6 +154,61 @@ public class PrepareDatabase {
 
                 dbStructure str = db.GetStructure(mol.StructureId);
                 InsilicoMolecule imol = SmilesMolecule.Convert(str.SMILES);
+
+                // special case for BCF - Mw and logP have to be set
+                if (AB.getClass() == SABCFIRFMNThreshold.class) {
+
+                    double MW = Descriptor.MISSING_VALUE;
+                    double logP = Descriptor.MISSING_VALUE;
+
+                    try {
+                        if (imol.IsValid()) {
+                            Constitutional Desc = new Constitutional();
+                            Desc.Calculate(imol);
+                            try {
+                                // Note: MW is calculated on carbon-scaled values
+                                MW = Desc.GetByName("MW").getValue() * 12.011;
+                            } catch (DescriptorNotFoundException ex) {
+                                MW = Descriptor.MISSING_VALUE;
+                            }
+                        }
+                    } catch (Exception ex) {
+                        //
+                    }
+
+                    // LogP
+
+                    Double ExpLogP = null;
+
+                    try {
+                        ArrayList<dbValue> res = db.GetAllValuesForMoleculeAndEndpoint(mol.StructureId, RaEngine.DB_VALUE_TYPE_LOGP);
+                        if (!res.isEmpty())
+                            ExpLogP = res.get(0).Value;
+                    } catch (Exception e) {
+                        ExpLogP = null;
+                    }
+
+                    if (ExpLogP != null) {
+
+                        logP = ExpLogP;
+
+                    } else {
+
+                        // LogP must be predicted
+                        if (imol.IsValid()) {
+                            LogPDesc.Calculate(imol);
+                            try {
+                                if (LogPDesc.GetByName("LogP").getValue() != Descriptor.MISSING_VALUE)
+                                    logP = LogPDesc.GetByName("LogP").getValue();
+                            } catch (DescriptorNotFoundException ex) {
+                                //
+                            }
+                        }
+                    }
+
+                    ((SABCFIRFMNThreshold) AB).setLogP(logP);
+                    ((SABCFIRFMNThreshold) AB).setMW(MW);
+                }
 
                 ArrayList<AlertList> curAlerts = new ArrayList<>();
                 curAlerts.add(AB.Calculate(imol));

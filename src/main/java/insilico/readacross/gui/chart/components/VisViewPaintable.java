@@ -123,7 +123,7 @@ public class VisViewPaintable implements VisualizationServer.Paintable{
         GradientPaint paint = null;
         Graphics2D g2d = (Graphics2D) g;
         
-        Font curFont = new Font("Arial", Font.PLAIN, 11);
+        Font curFont = new Font("Default", Font.PLAIN, 11);
         g.setFont(curFont);
         
         if(gradientBackGround){

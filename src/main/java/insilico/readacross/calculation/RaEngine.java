@@ -62,8 +62,12 @@ public class RaEngine {
     public final static String EP_FISH_VERMEER = "Fish Acute Toxicity";
     public final static String EP_DAPHNIA_VERMEER = "Daphnia Magna Toxicity";
     public final static String EP_CGX_VERMEER = "Carcinogenicity (CGX)";
-    public final static String EP_MICRONUCLEUS_VERMEER = "In vitro Micro Nucleus assay";
-    
+    public final static String EP_MICRONUCLEUS_VERMEER = "In vitro Micronucleus assay";
+
+    public final static String EP_MICRONUCLEUS_INVIVO = "In vivo Micronucleus assay";
+    public final static String EP_ANDROGEN_RECEPTOR = "Androgen Receptor-mediated effect";
+    public final static String EP_SKIN_IRRITATION = "Skin Irritation";
+
     public final static String[] AVAILABLE_EP = {
         EP_MUTAGENICITY,
         EP_BCF,
@@ -82,7 +86,10 @@ public class RaEngine {
         EP_FISH_VERMEER,
         EP_DAPHNIA_VERMEER,
         EP_CGX_VERMEER,
-        EP_MICRONUCLEUS_VERMEER
+        EP_MICRONUCLEUS_VERMEER,
+        EP_MICRONUCLEUS_INVIVO,
+        EP_ANDROGEN_RECEPTOR,
+        EP_SKIN_IRRITATION
     };
     
     // Id for value types into the DB - to be modified if the db is modified
@@ -106,6 +113,10 @@ public class RaEngine {
     public final static int DB_VALUE_TYPE_FISH_VERMEER = 18;
     public final static int DB_VALUE_TYPE_CGX_VERMEER = 19;
     public final static int DB_VALUE_TYPE_MICRONUCLEUS_VERMEER = 20;
+
+    public final static int DB_VALUE_TYPE_MICRONUCLEUS_INVIVO = 21;
+    public final static int DB_VALUE_TYPE_ANDROGEN_RECEPTOR = 22;
+    public final static int DB_VALUE_TYPE_SKIN_IRRITATION = 23;
 
     // Types for additional values
     public final static short ADD_VALUE_TYPE_MW = 1;

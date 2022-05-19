@@ -32,7 +32,7 @@ public class PrepareDatabase {
         p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("db_toxread_8_0.dat");
+        p.CloseAndSave("db_toxread_prova_4.dat");
         p.DbSummary();
     }
 
@@ -47,6 +47,12 @@ public class PrepareDatabase {
     public void BuildDatabase() throws Exception {
         RaEndpoint ep;
         ArrayList<iAlertBlock> alerts = new ArrayList<>();
+
+
+        ep = new RaEndpointInvivoMicronucleus(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
 
         ep = new RaEndpointMutagenicity(db);
         for (iAlertBlock a : ep.getAlertBlocks()) {
@@ -65,26 +71,6 @@ public class PrepareDatabase {
         AddEndpointData(ep);
 
         ep = new RaEndpointCarcinogenicityCGX(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointDaphniaCombase(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointDaphniaVermeer(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointFishCombase(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointFishVermeer(db);
         for (iAlertBlock a : ep.getAlertBlocks())
             alerts.add(a);
         AddEndpointData(ep);

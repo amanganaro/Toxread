@@ -1,5 +1,6 @@
 package insilico.readacross.gui.application;
 
+import insilico.readacross.calculation.endpoints.*;
 import insilico.readacross.database.iDBConnector;
 //import insilico.readacross.database.implementation.local.DBConnectorLocal;
 import insilico.readacross.database.local.DBConnectorLocal;
@@ -7,25 +8,6 @@ import insilico.readacross.database.objects.dbEndpoint;
 import insilico.core.molecule.InsilicoMolecule;
 import insilico.core.molecule.conversion.SmilesMolecule;
 import insilico.readacross.calculation.RaEngine;
-import insilico.readacross.calculation.endpoints.RaEndpoint;
-import insilico.readacross.calculation.endpoints.RaEndpointAlgaeCombase;
-import insilico.readacross.calculation.endpoints.RaEndpointBCF;
-import insilico.readacross.calculation.endpoints.RaEndpointCarcinogenicityCGX;
-import insilico.readacross.calculation.endpoints.RaEndpointDaphniaCombase;
-import insilico.readacross.calculation.endpoints.RaEndpointDaphniaVermeer;
-import insilico.readacross.calculation.endpoints.RaEndpointFishCombase;
-import insilico.readacross.calculation.endpoints.RaEndpointFishVermeer;
-import insilico.readacross.calculation.endpoints.RaEndpointHepatotox;
-import insilico.readacross.calculation.endpoints.RaEndpointMicrobesCombase;
-import insilico.readacross.calculation.endpoints.RaEndpointMicronucleus;
-import insilico.readacross.calculation.endpoints.RaEndpointMutagenicity;
-import insilico.readacross.calculation.endpoints.RaEndpointNephrotox;
-import insilico.readacross.calculation.endpoints.RaEndpointPersistenceSediment;
-import insilico.readacross.calculation.endpoints.RaEndpointPersistenceSoil;
-import insilico.readacross.calculation.endpoints.RaEndpointPersistenceWater;
-import insilico.readacross.calculation.endpoints.RaEndpointReadyBiodegradability;
-import insilico.readacross.calculation.endpoints.RaEndpointReprotox;
-import insilico.readacross.calculation.endpoints.RaEndpointSkinSensitization;
 import insilico.readacross.messagelogger.RaMessageLogger;
 import insilico.readacross.type.objects.RaResultsContainer;
 import insilico.readacross.utils.PrepareDatabase;
@@ -48,7 +30,7 @@ public class RaGUIApplication extends JFrame {
     private iDBConnector DBConn;
     private final static String VERSION = "BETA 0.23";
 //    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
-    private final static String DB_FILE = "/vega-db/db_toxread_8_0.dat";
+    private final static String DB_FILE = "/vega-db/db_toxread_prova_5.dat";
 
     private final static boolean LOAD_FROM_SERIALIZED_FILE = true;
 
@@ -305,9 +287,15 @@ public class RaGUIApplication extends JFrame {
                     else if (selEP.equalsIgnoreCase(RaEngine.EP_DAPHNIA_VERMEER))
                         endpoint = new RaEndpointDaphniaVermeer(DBConn);   
                     else if (selEP.equalsIgnoreCase(RaEngine.EP_CGX_VERMEER))
-                        endpoint = new RaEndpointCarcinogenicityCGX(DBConn);   
+                        endpoint = new RaEndpointCarcinogenicityCGX(DBConn);
                     else if (selEP.equalsIgnoreCase(RaEngine.EP_MICRONUCLEUS_VERMEER))
-                        endpoint = new RaEndpointMicronucleus(DBConn);   
+                        endpoint = new RaEndpointMicronucleus(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_MICRONUCLEUS_INVIVO))
+                        endpoint = new RaEndpointInvivoMicronucleus(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_ANDROGEN_RECEPTOR))
+                        endpoint = new RaEndpointAndrogenReceptor(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_SKIN_IRRITATION))
+                        endpoint = new RaEndpointSkinIrritation(DBConn);
                     else
                         endpoint = null;
                     

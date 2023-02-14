@@ -30,7 +30,7 @@ public class RaGUIApplication extends JFrame {
     private iDBConnector DBConn;
     private final static String VERSION = "BETA 0.23";
 //    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
-    private final static String DB_FILE = "/vega-db/db_toxread_prova_5.dat";
+    private final static String DB_FILE = "/vega-db/db_toxread_prova_6_tmp.dat";
 
     private final static boolean LOAD_FROM_SERIALIZED_FILE = true;
 
@@ -296,6 +296,12 @@ public class RaGUIApplication extends JFrame {
                         endpoint = new RaEndpointAndrogenReceptor(DBConn);
                     else if (selEP.equalsIgnoreCase(RaEngine.EP_SKIN_IRRITATION))
                         endpoint = new RaEndpointSkinIrritation(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_AROMATASE))
+                        endpoint = new RaEndpointAromatase(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_EYE_IRRITATION))
+                        endpoint = new RaEndpointEyeIrritation(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_LD50))
+                        endpoint = new RaEndpointLD50(DBConn);
                     else
                         endpoint = null;
                     

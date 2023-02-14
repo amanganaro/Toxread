@@ -14,6 +14,7 @@ import insilico.core.constant.InsilicoConstants;
 import insilico.core.exception.GenericFailureException;
 import insilico.core.exception.InitFailureException;
 import insilico.core.exception.InvalidMoleculeException;
+import insilico.readacross.calculation.RaEngine;
 
 /**
  *
@@ -33,7 +34,7 @@ public class SABenigniBossaMutagenic extends AlertBlock {
     private SABenigniBossa BB;
     
     public SABenigniBossaMutagenic() throws InitFailureException {
-        super(-1,"Benigni/Bossa (from ToxTree 2.6) rule set");
+        super(100+ RaEngine.DB_VALUE_TYPE_MUTAGENICITY,"Benigni/Bossa (from ToxTree 2.6) rule set");
     }
     
     

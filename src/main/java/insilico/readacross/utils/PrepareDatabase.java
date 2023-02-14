@@ -32,7 +32,7 @@ public class PrepareDatabase {
         p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("db_toxread_prova_4.dat");
+        p.CloseAndSave("db_toxread_prova_6_tmp.dat");
         p.DbSummary();
     }
 
@@ -49,86 +49,120 @@ public class PrepareDatabase {
         ArrayList<iAlertBlock> alerts = new ArrayList<>();
 
 
+        // Action B.3 - module no. 3
+        ep = new RaEndpointEyeIrritation(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        // Action B.3 - module no. 6
+        ep = new RaEndpointLD50(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        // Action B.3 - module no. 10
+        ep = new RaEndpointAromatase(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        // Action B.3 - module no. 7
+        ep = new RaEndpointAndrogenReceptor(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        // Action B.3 - module no. 2
+        ep = new RaEndpointSkinIrritation(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        // Action B.3 - module no. 4
         ep = new RaEndpointInvivoMicronucleus(db);
         for (iAlertBlock a : ep.getAlertBlocks())
             alerts.add(a);
         AddEndpointData(ep);
 
-        ep = new RaEndpointMutagenicity(db);
-        for (iAlertBlock a : ep.getAlertBlocks()) {
-                alerts.add(a);
-        }
-        AddEndpointData(ep);
 
-        ep = new RaEndpointSkinSensitization(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
+////////////
 
-        ep = new RaEndpointAlgaeCombase(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointCarcinogenicityCGX(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointHepatotox(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointMicrobesCombase(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointMicronucleus(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointNephrotox(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointPersistenceSediment(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointPersistenceSoil(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointPersistenceWater(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointReadyBiodegradability(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointReprotox(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointLogP(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
-
-        ep = new RaEndpointBCF(db);
-        for (iAlertBlock a : ep.getAlertBlocks())
-            alerts.add(a);
-        AddEndpointData(ep);
+//        ep = new RaEndpointMutagenicity(db);
+//        for (iAlertBlock a : ep.getAlertBlocks()) {
+//                alerts.add(a);
+//        }
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointSkinSensitization(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointAlgaeCombase(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointCarcinogenicityCGX(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointHepatotox(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointMicrobesCombase(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointMicronucleus(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointNephrotox(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointPersistenceSediment(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointPersistenceSoil(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointPersistenceWater(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointReadyBiodegradability(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointReprotox(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointLogP(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
+//
+//        ep = new RaEndpointBCF(db);
+//        for (iAlertBlock a : ep.getAlertBlocks())
+//            alerts.add(a);
+//        AddEndpointData(ep);
 
 
 

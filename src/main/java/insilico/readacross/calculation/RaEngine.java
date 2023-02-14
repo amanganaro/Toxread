@@ -67,6 +67,10 @@ public class RaEngine {
     public final static String EP_MICRONUCLEUS_INVIVO = "In vivo Micronucleus assay";
     public final static String EP_ANDROGEN_RECEPTOR = "Androgen Receptor-mediated effect";
     public final static String EP_SKIN_IRRITATION = "Skin Irritation";
+    public final static String EP_DEVTOX = "Developmental toxicity"; // TODO capire cosa sia
+    public final static String EP_AROMATASE = "Aromatase activity";
+    public final static String EP_EYE_IRRITATION = "Eye Irritation";
+    public final static String EP_LD50 = "Rat LD50 toxicity";
 
     public final static String[] AVAILABLE_EP = {
         EP_MUTAGENICITY,
@@ -89,7 +93,11 @@ public class RaEngine {
         EP_MICRONUCLEUS_VERMEER,
         EP_MICRONUCLEUS_INVIVO,
         EP_ANDROGEN_RECEPTOR,
-        EP_SKIN_IRRITATION
+        EP_SKIN_IRRITATION,
+//        EP_DEVTOX,
+        EP_AROMATASE,
+        EP_EYE_IRRITATION,
+        EP_LD50
     };
     
     // Id for value types into the DB - to be modified if the db is modified
@@ -117,6 +125,10 @@ public class RaEngine {
     public final static int DB_VALUE_TYPE_MICRONUCLEUS_INVIVO = 21;
     public final static int DB_VALUE_TYPE_ANDROGEN_RECEPTOR = 22;
     public final static int DB_VALUE_TYPE_SKIN_IRRITATION = 23;
+    public final static int DB_VALUE_TYPE_DEVTOX = 24; // TODO capire cosa sia
+    public final static int DB_VALUE_TYPE_AROMATASE = 25;
+    public final static int DB_VALUE_TYPE_EYE_IRRITATION = 26;
+    public final static int DB_VALUE_TYPE_LD50 = 27;
 
     // Types for additional values
     public final static short ADD_VALUE_TYPE_MW = 1;

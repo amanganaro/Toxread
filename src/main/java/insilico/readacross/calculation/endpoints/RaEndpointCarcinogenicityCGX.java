@@ -4,6 +4,7 @@ import insilico.core.alerts.builders.SACGXVermeer;
 import insilico.core.exception.InitFailureException;
 import insilico.core.alerts.iAlertBlock;
 import insilico.core.constant.InsilicoConstants;
+import insilico.readacross.calculation.endpoints.utils.SABenigniBossaCarcinogenic;
 import insilico.readacross.database.iDBConnector;
 import insilico.readacross.database.objects.dbDataType;
 import insilico.readacross.database.objects.dbValue;
@@ -56,12 +57,14 @@ public class RaEndpointCarcinogenicityCGX extends RaEndpoint {
     @Override
     protected void BuildAlertBlocks() throws InitFailureException {
 
-        this.AlertBlocks = new iAlertBlock[1];
+        this.AlertBlocks = new iAlertBlock[2];
         this.AlertBlocks[0] = new SACGXVermeer();
-        
-        this.AlertBlockEnabled = new boolean[1];
+        this.AlertBlocks[1] = new SABenigniBossaCarcinogenic();
+
+        this.AlertBlockEnabled = new boolean[2];
         this.AlertBlockEnabled[0] = true;
-        
+        this.AlertBlockEnabled[1] = true;
+
     }
     
     @Override
@@ -93,7 +96,7 @@ public class RaEndpointCarcinogenicityCGX extends RaEndpoint {
 
     @Override
     public short getShapeForRule(iRaObjectRule Rule) {
-        if (Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_CARC_TOXIC))
+        if ( (Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_CARC_TOXIC)) || (Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_IS_TOXIC)) )
             return SHAPE_TRIANGLE_DOWN;
         else
             return SHAPE_TRIANGLE_UP;
@@ -136,11 +139,9 @@ public class RaEndpointCarcinogenicityCGX extends RaEndpoint {
     
     @Override
     public Color getColorForRule(iRaObjectRule Rule) {
-        if ( Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_CARC_TOXIC) )
+        if ( ( Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_CARC_TOXIC)) || (Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_IS_TOXIC)) )
             return Color.RED;
-        if ( Rule.getAlert().getBoolProperty(InsilicoConstants.KEY_ALERT_CARC_NONTOXIC) )
-            return Color.GREEN;
-        return Color.GRAY;    
+        return Color.GREEN;
     }
  
     @Override

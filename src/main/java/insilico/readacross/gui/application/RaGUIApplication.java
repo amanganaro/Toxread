@@ -28,9 +28,8 @@ import javax.swing.text.DefaultCaret;
 public class RaGUIApplication extends JFrame {
 
     private iDBConnector DBConn;
-    private final static String VERSION = "BETA 0.23";
-//    private final static String DB_FILE = "/vega-db/db_toxread_7_0.dat";
-    private final static String DB_FILE = "/vega-db/db_toxread_prova_6_tmp.dat";
+    private final static String VERSION = "0.25";
+    private final static String DB_FILE = "/vega-db/db_toxread_9_0.dat";
 
     private final static boolean LOAD_FROM_SERIALIZED_FILE = true;
 
@@ -302,6 +301,8 @@ public class RaGUIApplication extends JFrame {
                         endpoint = new RaEndpointEyeIrritation(DBConn);
                     else if (selEP.equalsIgnoreCase(RaEngine.EP_LD50))
                         endpoint = new RaEndpointLD50(DBConn);
+                    else if (selEP.equalsIgnoreCase(RaEngine.EP_REPROTOX_CONCERT))
+                        endpoint = new RaEndpointReprotoxConcert(DBConn);
                     else
                         endpoint = null;
                     

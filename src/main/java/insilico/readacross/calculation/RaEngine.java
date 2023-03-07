@@ -71,6 +71,7 @@ public class RaEngine {
     public final static String EP_AROMATASE = "Aromatase activity";
     public final static String EP_EYE_IRRITATION = "Eye Irritation";
     public final static String EP_LD50 = "Rat LD50 toxicity";
+    public final static String EP_REPROTOX_CONCERT = "Reproductive toxicity (CONCERT)";
 
     public final static String[] AVAILABLE_EP = {
         EP_MUTAGENICITY,
@@ -97,7 +98,8 @@ public class RaEngine {
 //        EP_DEVTOX,
         EP_AROMATASE,
         EP_EYE_IRRITATION,
-        EP_LD50
+        EP_LD50,
+        EP_REPROTOX_CONCERT
     };
     
     // Id for value types into the DB - to be modified if the db is modified
@@ -129,6 +131,7 @@ public class RaEngine {
     public final static int DB_VALUE_TYPE_AROMATASE = 25;
     public final static int DB_VALUE_TYPE_EYE_IRRITATION = 26;
     public final static int DB_VALUE_TYPE_LD50 = 27;
+    public final static int DB_VALUE_TYPE_REPROTOX_CONCERT = 28;
 
     // Types for additional values
     public final static short ADD_VALUE_TYPE_MW = 1;

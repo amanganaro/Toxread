@@ -808,6 +808,7 @@ public class SALD50Concert extends AlertBlockFromSMARTS implements iAlertBlock {
             Alert curSA = new Alert(BlockIndex, AlertEncoding.BuildAlertId(BlockIndex, (idx+1)));
             curSA.setName("LD50 alert no. " + (i+1));
             curSA.setDescription("Structural alert for LD50 " + SMARTS_ACTIVITY[i][1] + " compounds, defined by the SMARTS: " + SMARTS_ACTIVITY[i][0] );
+            curSA.setSMARTS(SMARTS_ACTIVITY[i][0]);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(NON_TOXIC))
                 curSA.setBoolProperty(KEY_ALERT_LD50_NON_TOX, true);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(NOT_VERY_TOXIC))

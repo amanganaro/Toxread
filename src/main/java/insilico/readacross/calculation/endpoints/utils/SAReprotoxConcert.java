@@ -199,6 +199,7 @@ public class SAReprotoxConcert extends AlertBlockFromSMARTS implements iAlertBlo
             Alert curSA = new Alert(BlockIndex, AlertEncoding.BuildAlertId(BlockIndex, (idx+1)));
             curSA.setName("Reprotox alert no. " + (i+1));
             curSA.setDescription("Structural alert for " + SMARTS_ACTIVITY[i][1] + " compounds (" + SMARTS_ACTIVITY[i][2] + "), defined by the SMARTS: " + SMARTS_ACTIVITY[i][0] );
+            curSA.setSMARTS(SMARTS_ACTIVITY[i][0]);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(ACTIVE))
                 curSA.setBoolProperty(KEY_ALERT_EYE_REPRO_ACTIVE, true);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(INACTIVE))

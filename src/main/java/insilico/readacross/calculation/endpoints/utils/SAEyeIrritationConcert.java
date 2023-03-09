@@ -135,6 +135,7 @@ public class SAEyeIrritationConcert extends AlertBlockFromSMARTS implements iAle
             Alert curSA = new Alert(BlockIndex, AlertEncoding.BuildAlertId(BlockIndex, (idx+1)));
             curSA.setName("Eye Irritation alert no. " + (i+1));
             curSA.setDescription("Structural alert for eye " + SMARTS_ACTIVITY[i][1] + " compounds, defined by the SMARTS: " + SMARTS_ACTIVITY[i][0] );
+            curSA.setSMARTS(SMARTS_ACTIVITY[i][0]);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(ACTIVE))
                 curSA.setBoolProperty(KEY_ALERT_EYE_IRRITATION_ACTIVE, true);
             if (SMARTS_ACTIVITY[i][1].equalsIgnoreCase(INACTIVE))

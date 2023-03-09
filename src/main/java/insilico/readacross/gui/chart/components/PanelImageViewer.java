@@ -42,6 +42,12 @@ public class PanelImageViewer extends javax.swing.JPanel {
         }
         this.repaint();
     }
+
+    public void SetImage(BufferedImage img) {
+        curImg = img;
+        this.repaint();
+
+    }
     
     
     @Override

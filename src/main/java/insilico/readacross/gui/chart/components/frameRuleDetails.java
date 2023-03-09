@@ -1,7 +1,11 @@
 package insilico.readacross.gui.chart.components;
 
+import com.lowagie.text.Image;
 import insilico.core.alerts.Alert;
 import insilico.core.constant.InsilicoConstants;
+import insilico.core.molecule.InsilicoMolecule;
+import insilico.core.molecule.conversion.SmilesMolecule;
+import insilico.core.molecule.tools.Depiction;
 import insilico.readacross.database.objects.dbStructure;
 import insilico.readacross.database.objects.dbValue;
 import insilico.core.exception.PropertyNotFoundException;
@@ -10,6 +14,7 @@ import insilico.readacross.type.interfaces.iRaObjectRule;
 import insilico.readacross.type.objects.RaResultsContainer;
 import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -57,6 +62,21 @@ public class frameRuleDetails extends javax.swing.JFrame {
         String ImgURL = RuleObj.getAlert().getImageURL();
         if (ImgURL != null) {
             ImgViewer.SetImage(ImgURL);
+        } else {
+            // try depict
+            try {
+                String SMARTS = RuleObj.getAlert().getSMARTS();
+                if (SMARTS == null) throw new Exception();
+                if (SMARTS.isEmpty()) throw new Exception();
+
+                InsilicoMolecule mol = SmilesMolecule.Convert(SMARTS);
+                BufferedImage RuleImage = Depiction.DepictMolecule(mol.GetStructure(), 200, 200);
+                ImgViewer.SetImage(RuleImage);
+            } catch (Exception e) {
+                // do nothing
+            }
+
+
         }
         
         // Set the additional info

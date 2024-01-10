@@ -61,7 +61,7 @@ public class RaEndpointDaphniaVermeer extends RaEndpoint {
         Df3digits = new DecimalFormat("0.###", InternationalSymbols);
         
         try {
-            ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_FISH_VERMEER);
+            ArrayList<dbValue> buf = DBconn.GetAllValuesForEndpoint(RaEngine.DB_VALUE_TYPE_DAPHNIA_VERMEER);
             EndpointDataType = DBconn.GetDataType(buf.get(0).DataTypeId);
         } catch (Exception e) {
             System.err.println("Unable to init data type");

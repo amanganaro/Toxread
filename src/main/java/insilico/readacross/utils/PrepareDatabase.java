@@ -30,7 +30,7 @@ public class PrepareDatabase {
         p.BuildDatabase();
 
         System.out.println("-----");
-        p.CloseAndSave("db_toxread_9_0.dat");
+        p.CloseAndSave("db_toxread_10_0.dat");
         p.DbSummary();
     }
 
@@ -46,6 +46,30 @@ public class PrepareDatabase {
         RaEndpoint ep;
         ArrayList<iAlertBlock> alerts = new ArrayList<>();
 
+
+        // these four were missing in previous release
+
+        ep = new RaEndpointDaphniaCombase(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointFishCombase(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointFishVermeer(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+        ep = new RaEndpointDaphniaVermeer(db);
+        for (iAlertBlock a : ep.getAlertBlocks())
+            alerts.add(a);
+        AddEndpointData(ep);
+
+////////////
 
         // Action B.3 - module no. 8
         ep = new RaEndpointReprotoxConcert(db);

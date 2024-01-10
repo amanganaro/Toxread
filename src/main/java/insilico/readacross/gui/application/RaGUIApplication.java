@@ -28,8 +28,8 @@ import javax.swing.text.DefaultCaret;
 public class RaGUIApplication extends JFrame {
 
     private iDBConnector DBConn;
-    private final static String VERSION = "0.25";
-    private final static String DB_FILE = "/vega-db/db_toxread_9_0.dat";
+    private final static String VERSION = "0.26";
+    private final static String DB_FILE = "/vega-db/db_toxread_10_0.dat";
 
     private final static boolean LOAD_FROM_SERIALIZED_FILE = true;
 

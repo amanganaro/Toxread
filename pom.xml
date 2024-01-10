@@ -6,7 +6,7 @@
 
     <groupId>com.kchm</groupId>
     <artifactId>Toxread</artifactId>
-    <version>0.25</version>
+    <version>0.26</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -18,25 +18,23 @@
        Description for ToxRead
     </description>
 
-    <repositories>
-        <repository>
-            <id>maven-group</id>
-            <url>http://tech.kode-datacenter.net:8081/repository/maven-group/</url>
-        </repository>
-    </repositories>
-
     <distributionManagement>
-
         <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <url>http://tech.kode-datacenter.net:8081/repository/maven-snapshots/</url>
+            <id>amcc-maven-snapshots</id>
+            <url>http://tech-amcc.it:8081/repository/amcc-maven-snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>nexus-releases</id>
-            <url>http://tech.kode-datacenter.net:8081/repository/maven-releases/</url>
+            <id>amcc-maven-releases</id>
+            <url>http://tech-amcc.it:8081/repository/amcc-maven-releases/</url>
         </repository>
-
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>maven-public</id>
+            <url>http://tech-amcc.it:8081/repository/maven-public/</url>
+        </repository>
+    </repositories>
 
 
     <dependencies>
@@ -55,7 +53,7 @@
         </dependency>
 
         <dependency>
-            <groupId>insilico</groupId>
+            <groupId>InSilico</groupId>
             <artifactId>additionalui</artifactId>
             <version>1</version>
         </dependency>

@@ -290,7 +290,7 @@ public class RaEngine {
             AddParentRules(curRule, alerts, DS, endpoint);
             
             //Root.addChildren(curRule);
-            ChildrenList.add(curRule);            
+            ChildrenList.add(curRule);
         }
         
         // Sort children rules and add them to the root node

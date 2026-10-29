@@ -12,11 +12,11 @@ import java.util.Iterator;
  */
 public class RaObject implements iRaObject {
 
-    public static int RA_OBJECT_ROOT_MOLECULE = 1;
-    public static int RA_OBJECT_RULE = 2;
-    public static int RA_OBJECT_SIM_MOLECULE = 3;
-    public static int RA_OBJECT_CONNECTOR = 4;
-    public static int RA_OBJECT_INTERPOLATION = 5;
+    public static final int RA_OBJECT_ROOT_MOLECULE = 1;
+    public static final int RA_OBJECT_RULE = 2;
+    public static final int RA_OBJECT_SIM_MOLECULE = 3;
+    public static final int RA_OBJECT_CONNECTOR = 4;
+    public static final int RA_OBJECT_INTERPOLATION = 5;
     
     private final int ObjectType;
     private ArrayList<iRaObject> Children;

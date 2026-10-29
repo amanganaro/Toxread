@@ -4,6 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.2.0-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <groupId>com.kchm</groupId>
     <artifactId>Toxread</artifactId>
     <version>0.26</version>
@@ -19,25 +26,35 @@
     </description>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>amcc-maven-snapshots</id>
-            <url>http://tech-amcc.it:8081/repository/amcc-maven-snapshots/</url>
-        </snapshotRepository>
         <repository>
-            <id>amcc-maven-releases</id>
-            <url>http://tech-amcc.it:8081/repository/amcc-maven-releases/</url>
+            <id>protoqsar-maven-releases</id>
+            <url>https://nexus.protoqsar.com/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
     <repositories>
         <repository>
-            <id>maven-public</id>
-            <url>http://tech-amcc.it:8081/repository/maven-public/</url>
+            <id>maven-central</id>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <!-- public repo hosted by ProtoQSAR, access with maven-public:maven-public -->
+            <id>protoqsar-maven-public</id>
+            <url>https://nexus.protoqsar.com/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>bubuntux-repo</id>
+            <url>https://raw.github.com/bubuntux/mvn/repo/</url>
         </repository>
     </repositories>
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
@@ -48,14 +65,13 @@
         <dependency>
             <groupId>InSilico</groupId>
             <artifactId>Core</artifactId>
-<!--            <version>1.3.14</version> -->
-            <version>1.3.18</version>
+            <version>1.3.21</version>
         </dependency>
 
         <dependency>
-            <groupId>InSilico</groupId>
-            <artifactId>additionalui</artifactId>
-            <version>1</version>
+            <groupId>org.netbeans</groupId>
+            <artifactId>awtextra</artifactId>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>
@@ -88,42 +104,47 @@
             <version>2.1.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
 
         <resources>
             <resource>
-<!--                <filtering>true</filtering>-->
                 <directory>src/main/resources/form</directory>
                 <targetPath>../classes/form</targetPath>
             </resource>
-            <resource>
-<!--                <filtering>true</filtering>-->
 
+            <resource>
                 <directory>src/main/resources/images</directory>
                 <targetPath>../classes/images</targetPath>
             </resource>
-            <resource>
-<!--                <filtering>true</filtering>-->
 
+            <resource>
                 <directory>src/main/resources/vega-db</directory>
                 <targetPath>../classes/vega-db</targetPath>
             </resource>
-            <resource>
-<!--                <filtering>true</filtering>-->
 
+            <resource>
                 <directory>src/main/resources/components</directory>
                 <targetPath>../classes/components</targetPath>
             </resource>
-            <resource>
-<!--                <filtering>true</filtering>-->
 
+            <resource>
                 <directory>src/main/resources/data</directory>
                 <targetPath>../classes/data</targetPath>
             </resource>
         </resources>
-
 
 
         <pluginManagement>
@@ -137,6 +158,11 @@
         </pluginManagement>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

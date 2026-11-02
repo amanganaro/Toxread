@@ -1,5 +1,6 @@
 package insilico.readacross.controller;
 
+import insilico.readacross.entity.RaRequest;
 import insilico.readacross.service.ToxreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,9 @@ public class ToxreadController extends AbstractRestController{
     }
 
     @PostMapping(path = "/compute", produces = "application/json")
-    public ResponseEntity<?> startRA(@RequestBody String smiles, @RequestParam String endpoint,
-                                     @RequestParam int numSimilarMolecules) {
+    public ResponseEntity<?> startRA(@RequestBody RaRequest raRequest) {
         return executeCommandOrFail(() ->
-                toxreadService.startRA(smiles, endpoint, numSimilarMolecules));
+                toxreadService.startRA(raRequest.getSmiles(), raRequest.getEndpoint(),
+                        raRequest.getNumSimilarMolecules()));
     }
 }

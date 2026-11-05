@@ -11,12 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class RaResponse {
-    @JsonProperty("endpoint")
     private String endpoint;
-    @JsonProperty("molecule")
-    private RootMoleculeDTO molecule;
-    @JsonProperty("similarMolecules")
+    private String prediction;
+    private MoleculeDTO molecule;
     private List<SimilarMoleculeDTO> similarMolecules;
-    @JsonProperty("rules")
     private List<RuleDTO> rules;
+    private List<InterpolationDTO> interpolation;
 }

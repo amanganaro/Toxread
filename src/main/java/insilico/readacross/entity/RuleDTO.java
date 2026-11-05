@@ -12,4 +12,9 @@ public class RuleDTO {
     private String name;
     private String description;
     private String smarts;
+    private String experimentalAccuracy;
+    private String experimentalAccuracyBiocide;
+    private String fisher;
+    private short shape;
+    private double sizeFactor;
 }

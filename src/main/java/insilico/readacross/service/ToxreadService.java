@@ -12,7 +12,6 @@ import insilico.readacross.calculation.RaEngine;
 import insilico.readacross.calculation.endpoints.*;
 import insilico.readacross.database.iDBConnector;
 import insilico.readacross.database.local.DBConnectorLocal;
-import insilico.readacross.database.objects.dbStructure;
 import insilico.readacross.entity.*;
 import insilico.readacross.exception.InvalidSmilesException;
 import insilico.readacross.exception.RaException;
@@ -44,8 +43,13 @@ public class ToxreadService {
     private boolean LOAD_FROM_SERIALIZED_FILE;
     @Value("${toxread.db.db_file}")
     private String DB_FILE;
-    private int imgWidth = 400;
-    private int imgHeight = 300;
+    @Value("${toxread.img.width}")
+    private int imgWidth;
+    @Value("${toxread.img.height}")
+    private int imgHeight;
+
+    private static final String SMARTS_MARKER_1 = "defined by the SMARTS:";
+    private static final String SMARTS_MARKER_2 = "defined by SMARTS:";
 
     private iDBConnector DBConn;
 
@@ -193,6 +197,43 @@ public class ToxreadService {
 
         iRaObjectRootMolecule root = (iRaObjectRootMolecule) res.getRootNode();
         String prediction = root.getPrediction();
+        MoleculeDTO rootMolecule = parseRootNode(root);
+
+        List<SimilarMoleculeDTO> similarMolecules = new ArrayList<>();
+        List<RuleDTO> rules = new ArrayList<>();
+        List<InterpolationDTO> interpolationNodes = new ArrayList<>();
+
+        Iterator<iRaObject> children = root.getChildren();
+        while (children.hasNext()) {
+            iRaObject node = children.next();
+            switch (node.getObjectType()) {
+                case RaObject.RA_OBJECT_SIM_MOLECULE:
+                    iRaObjectSimMolecule sim = (iRaObjectSimMolecule) node;
+                    SimilarMoleculeDTO similarMoleculeDTO = parseSimMolecule(res, sim);
+                    similarMolecules.add(similarMoleculeDTO);
+                    break;
+                case RaObject.RA_OBJECT_RULE:
+                    iRaObjectRule rule = (iRaObjectRule) node;
+                    RuleDTO ruleDTO = parseRule(rule);
+                    rules.add(ruleDTO);
+                    break;
+                case RaObject.RA_OBJECT_CONNECTOR:
+                    //iRaObjectConnector con = (iRaObjectConnector) node;
+                    break;
+                case RaObject.RA_OBJECT_INTERPOLATION:
+                    iRaObjectInterpolation inter = (iRaObjectInterpolation) node;
+                    InterpolationDTO interpolationDTO = parseInterpolation(inter);
+                    interpolationNodes.add(interpolationDTO);
+                    break;
+                default:
+            }
+        }
+
+        return new RaResponse(endpoint, prediction, rootMolecule, similarMolecules,
+                rules, interpolationNodes);
+    }
+
+    private MoleculeDTO parseRootNode(iRaObjectRootMolecule root) {
         double mw = 0;
         double logP = 0;
         boolean logPExperimental = false;
@@ -205,7 +246,7 @@ public class ToxreadService {
                     logPExperimental = true;
             }
         }
-        MoleculeDTO rootMolecule = new MoleculeDTO(
+        return new MoleculeDTO(
                 root.getMolecule().GetCAS(),
                 root.getMolecule().GetSMILES(),
                 retrieveDepiction(root.getMolecule().GetSMILES()),
@@ -213,150 +254,111 @@ public class ToxreadService {
                 logP,
                 logPExperimental
         );
+    }
 
-        List<SimilarMoleculeDTO> similarMolecules = new ArrayList<>();
-        List<RuleDTO> rules = new ArrayList<>();
-        List<InterpolationDTO> interpolationNodes = new ArrayList<>();
+    private SimilarMoleculeDTO parseSimMolecule(RaResultsContainer res, iRaObjectSimMolecule sim) {
+        double mw = 0;
+        double logP = 0;
+        boolean logPExperimental = false;
+        for (RaAdditionalValue val: sim.getAdditionalValues()) {
+            if (val.getName().equals("Molecular Weight"))
+                mw = val.getNumericalValue();
+            else if (val.getName().contains("LogP")) {
+                logP = val.getNumericalValue();
+                if (val.getName().contains("experimental"))
+                    logPExperimental = true;
+            }
+        }
+        return new SimilarMoleculeDTO(
+                new MoleculeDTO(
+                        sim.getMolecule().CAS,
+                        retrieveSmiles(res, sim),
+                        retrieveDepiction(retrieveSmiles(res, sim)),
+                        mw,
+                        logP,
+                        logPExperimental
+                ),
+                sim.getSimilarity(),
+                sim.getFormattedExperimentalValue()
+        );
+    }
 
-        /*
-        java.util.Deque<Iterator<iRaObject>> childrenToParse = new java.util.ArrayDeque<>();
-        childrenToParse.add(root.getChildren());
-        while (!childrenToParse.isEmpty()) {
-            Iterator<iRaObject> children = childrenToParse.poll();
-            while (children.hasNext()) {
-                iRaObject node = children.next();
-                switch (node.getObjectType()) {
-                    case RaObject.RA_OBJECT_SIM_MOLECULE:
-                        iRaObjectSimMolecule sim = (iRaObjectSimMolecule) node;
-                        SimilarMoleculeDTO similarMoleculeDTO = new SimilarMoleculeDTO(
-                                sim.getMolecule().CAS,
-                                sim.getMolecule().CommonName,
-                                sim.getSimilarity(),
-                                sim.getFormattedExperimentalValue()
-                        );
-                        similarMolecules.add(similarMoleculeDTO);
-                        childrenToParse.add(node.getChildren());
-                        break;
-                    case RaObject.RA_OBJECT_RULE:
-                        iRaObjectRule rule = (iRaObjectRule) node;
-                        RuleDTO ruleDTO = new RuleDTO(
-                                rule.getAlert().getName(),
-                                rule.getAlert().getDescription(),
-                                rule.getAlert().getSMARTS()
-                        );
-                        rules.add(ruleDTO);
-                        childrenToParse.add(node.getChildren());
-                        break;
-                    case RaObject.RA_OBJECT_CONNECTOR:
-                        childrenToParse.add(node.getChildren());
-                        break;
-                    case RaObject.RA_OBJECT_INTERPOLATION:
-                    default:
+    private RuleDTO parseRule(iRaObjectRule rule) {
+        DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
+        InternationalSymbols.setDecimalSeparator('.');
+        java.text.DecimalFormat df3 =
+                new java.text.DecimalFormat("0.###", InternationalSymbols);
+        java.text.DecimalFormat df5 =
+                new java.text.DecimalFormat("0.#####", InternationalSymbols);
+
+        String smarts = rule.getAlert().getSMARTS();
+        if (smarts == null || smarts.isEmpty()) {
+            String description = rule.getAlert().getDescription();
+            if (description != null) {
+                int i = description.indexOf(SMARTS_MARKER_1);
+                if (i >= 0)
+                    smarts = description.substring(i + SMARTS_MARKER_1.length()).trim();
+                else {
+                    i = description.indexOf(SMARTS_MARKER_2);
+                    if (i >= 0)
+                        smarts= description.substring(i + SMARTS_MARKER_2.length()).trim();
                 }
             }
         }
-        */
 
-        Iterator<iRaObject> children = root.getChildren();
-        while (children.hasNext()) {
-            iRaObject node = children.next();
-            switch (node.getObjectType()) {
-                case RaObject.RA_OBJECT_SIM_MOLECULE:
-                    iRaObjectSimMolecule sim = (iRaObjectSimMolecule) node;
-                    /*double*/ mw = 0;
-                    /*double*/ logP = 0;
-                    /*boolean*/ logPExperimental = false;
-                    for (RaAdditionalValue val: sim.getAdditionalValues()) {
-                        if (val.getName().equals("Molecular Weight"))
-                            mw = val.getNumericalValue();
-                        else if (val.getName().contains("LogP")) {
-                            logP = val.getNumericalValue();
-                            if (val.getName().contains("experimental"))
-                                logPExperimental = true;
-                        }
-                    }
-                    SimilarMoleculeDTO similarMoleculeDTO = new SimilarMoleculeDTO(
-                            new MoleculeDTO(
-                                    sim.getMolecule().CAS,
-                                    retrieveSmiles(res, sim),
-                                    retrieveDepiction(retrieveSmiles(res, sim)),
-                                    mw,
-                                    logP,
-                                    logPExperimental
-                            ),
-                            sim.getSimilarity(),
-                            sim.getFormattedExperimentalValue()
-                    );
-                    similarMolecules.add(similarMoleculeDTO);
-                    System.out.println("sim mol " + sim.getMolecule().CAS);
-                    break;
-                case RaObject.RA_OBJECT_RULE:
-                    iRaObjectRule rule = (iRaObjectRule) node;
-                    DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
-                    InternationalSymbols.setDecimalSeparator('.');
-                    java.text.DecimalFormat df3 = new java.text.DecimalFormat("0.###", InternationalSymbols);
-                    java.text.DecimalFormat df5 = new java.text.DecimalFormat("0.#####", InternationalSymbols);
-                    String experimentalAccuracy;
-                    try {
-                        experimentalAccuracy = df3.format(rule.getAlert().getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY));
-                    } catch (PropertyNotFoundException e) { experimentalAccuracy = ""; }
-                    String experimentalAccuracyBiocide;
-                    try {
-                        experimentalAccuracyBiocide = df3.format(rule.getAlert().getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY_BIOCIDES));
-                    } catch (PropertyNotFoundException e) { experimentalAccuracyBiocide = ""; }
-                    String fisher;
-                    try {
-                        double fisherValue = rule.getAlert().getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_FISHER);
-                        if (fisherValue < 0.00001)
-                            fisher = "< 10e-6";
-                        else fisher = df5.format(fisherValue);
-                    } catch (PropertyNotFoundException e) { fisher = ""; }
-                    RuleDTO ruleDTO = new RuleDTO(
-                            rule.getAlert().getName(),
-                            rule.getAlert().getDescription(),
-                            rule.getAlert().getSMARTS(),
-                            experimentalAccuracy,
-                            experimentalAccuracyBiocide,
-                            fisher,
-                            rule.getShape(),
-                            rule.getSizeFactor()
-                    );
-                    rules.add(ruleDTO);
-                    System.out.println("rule" + rule.getAlert().getName());
-                    break;
-                case RaObject.RA_OBJECT_CONNECTOR:
-                    iRaObjectConnector con = (iRaObjectConnector) node;
-                    System.out.println("connector " + con.getChildrenSize());
-                    break;
-                case RaObject.RA_OBJECT_INTERPOLATION:
-                    iRaObjectInterpolation inter = (iRaObjectInterpolation) node;
-                    ArrayList<InterpolationPoint> points = new ArrayList<>();
-                    int numPoints = inter.getDataset().Count();
-                    for (int i=0; i<numPoints; i++) {
-                        InterpolationDataPoint p = inter.getDataset().GetPoint(i);
-                        InterpolationPoint point = new InterpolationPoint(
-                                p.GetMark(),
-                                p.GetCoordinates().X,
-                                p.GetCoordinates().Y
-                        );
-                        points.add(point);
-                    }
-                    InterpolationDTO interpolationDTO = new InterpolationDTO(
-                            inter.getAxisXTitle(),
-                            inter.getAxisYTitle(),
-                            inter.getDataset().GetTargetLine().X,
-                            inter.getDataset().GetTargetLine().Y,
-                            points
-                    );
-                    interpolationNodes.add(interpolationDTO);
-                    System.out.println("interpolation " + inter.getAxisYTitle());
-                    break;
-                default:
-            }
+        String experimentalAccuracy;
+        try {
+            experimentalAccuracy = df3.format(rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY));
+        } catch (PropertyNotFoundException e) { experimentalAccuracy = ""; }
+
+        String experimentalAccuracyBiocide;
+        try {
+            experimentalAccuracyBiocide = df3.format(rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY_BIOCIDES));
+        } catch (PropertyNotFoundException e) { experimentalAccuracyBiocide = ""; }
+
+        String fisher;
+        try {
+            double fisherValue = rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_FISHER);
+            if (fisherValue < 0.00001)
+                fisher = "< 10e-6";
+            else fisher = df5.format(fisherValue);
+        } catch (PropertyNotFoundException e) { fisher = ""; }
+
+        return new RuleDTO(
+                rule.getAlert().getName(),
+                rule.getAlert().getDescription(),
+                smarts,
+                retrieveDepiction(smarts),
+                experimentalAccuracy,
+                experimentalAccuracyBiocide,
+                fisher,
+                rule.getShape(),
+                rule.getSizeFactor()
+        );
+    }
+
+    private InterpolationDTO parseInterpolation(iRaObjectInterpolation inter) {
+        ArrayList<InterpolationPoint> points = new ArrayList<>();
+        int numPoints = inter.getDataset().Count();
+        for (int i=0; i<numPoints; i++) {
+            InterpolationDataPoint p = inter.getDataset().GetPoint(i);
+            InterpolationPoint point = new InterpolationPoint(
+                    p.GetMark(),
+                    p.GetCoordinates().X,
+                    p.GetCoordinates().Y
+            );
+            points.add(point);
         }
-
-        return new RaResponse(endpoint, prediction, rootMolecule, similarMolecules,
-                rules, interpolationNodes);
+        return new InterpolationDTO(
+                inter.getAxisXTitle(),
+                inter.getAxisYTitle(),
+                inter.getDataset().GetTargetLine().X,
+                inter.getDataset().GetTargetLine().Y,
+                points
+        );
     }
 
     private String retrieveSmiles(RaResultsContainer res, iRaObjectSimMolecule sim) {

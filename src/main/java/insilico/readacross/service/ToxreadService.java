@@ -13,6 +13,7 @@ import insilico.readacross.calculation.endpoints.*;
 import insilico.readacross.database.iDBConnector;
 import insilico.readacross.database.local.DBConnectorLocal;
 import insilico.readacross.entity.*;
+import insilico.readacross.exception.InvalidEndpointException;
 import insilico.readacross.exception.InvalidSmilesException;
 import insilico.readacross.exception.RaException;
 import insilico.readacross.gui.chart.components.interpolation.InterpolationDataPoint;
@@ -21,6 +22,7 @@ import insilico.readacross.type.objects.RaAdditionalValue;
 import insilico.readacross.type.objects.RaObject;
 import insilico.readacross.type.objects.RaResultsContainer;
 import insilico.readacross.utils.PrepareDatabase;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -53,21 +55,45 @@ public class ToxreadService {
 
     private iDBConnector DBConn;
 
+    @PostConstruct
+    void init() throws RaException {
+        try {
+            if (LOAD_FROM_SERIALIZED_FILE) {
+                this.DBConn = new DBConnectorLocal();
+                HashMap<String, String> p = new HashMap<>();
+                p.put(DBConnectorLocal.CONN_PARAM_INPUT_SERIAL, DB_FILE);
+                this.DBConn.Connect(p);
+            } else {
+                PrepareDatabase prepDB = new PrepareDatabase();
+                prepDB.BuildDatabase();
+                this.DBConn = prepDB.db;
+            }
+        } catch (Exception e) {
+            log.error("Unable to open database - {}", e.getMessage());
+            throw new RaException("Unable to open database");
+        }
+    }
+
     public EndpointsResponse retrieveEndpoints() {
         return new EndpointsResponse(RaEngine.AVAILABLE_EP);
     }
 
     public RaResponse startRA(String smiles, String endpoint, int numSimilarMolecules)
-            throws InvalidSmilesException, RaException {
+            throws InvalidSmilesException, InvalidEndpointException, RaException {
 
         InsilicoMolecule mol = SmilesMolecule.Convert(smiles);
         if (!mol.IsValid()) {
            log.error("Unable to parse SMILES molecule {}, read-across not performed", smiles);
-           throw new InvalidSmilesException("Unable to parse SMILES molecule" +
+           throw new InvalidSmilesException("Unable to parse SMILES molecule " +
                    smiles + ", read-across not performed");
         }
 
-        RaEngine raEngine = openDB();
+        if (!Arrays.asList(RaEngine.AVAILABLE_EP).contains(endpoint)) {
+            log.error("Error - invalid endpoint {}", endpoint);
+            throw new InvalidEndpointException("Endpoint " + endpoint + " not recognised");
+        }
+
+        RaEngine raEngine = new RaEngine(this.DBConn); //openDB();
         raEngine.setSimilarMoleculesSize(numSimilarMolecules);
 
         RaEndpoint raEndpoint = selectRaEndpoint(endpoint);
@@ -81,26 +107,6 @@ public class ToxreadService {
         }
 
         return parseResults(res);
-    }
-
-    private RaEngine openDB() throws RaException {
-        try {
-            if (LOAD_FROM_SERIALIZED_FILE) {
-                this.DBConn = new DBConnectorLocal();
-                HashMap<String, String> p = new HashMap<>();
-                p.put(DBConnectorLocal.CONN_PARAM_INPUT_SERIAL, DB_FILE);
-                this.DBConn.Connect(p);
-            } else {
-                PrepareDatabase prepDB = new PrepareDatabase();
-                prepDB.BuildDatabase();
-                this.DBConn = prepDB.db;
-            }
-        } catch (Exception e) {
-            log.info("Unable to open database");
-            throw new RaException("Unable to open database");
-        }
-
-        return new RaEngine(this.DBConn);
     }
 
     private RaEndpoint selectRaEndpoint(String endpoint) throws RaException {
@@ -234,8 +240,8 @@ public class ToxreadService {
     }
 
     private MoleculeDTO parseRootNode(iRaObjectRootMolecule root) {
-        double mw = 0;
-        double logP = 0;
+        Double mw = null;
+        Double logP = null;
         boolean logPExperimental = false;
         for (RaAdditionalValue val: root.getAdditionalValues()) {
             if (val.getName().equals("Molecular Weight"))
@@ -257,8 +263,8 @@ public class ToxreadService {
     }
 
     private SimilarMoleculeDTO parseSimMolecule(RaResultsContainer res, iRaObjectSimMolecule sim) {
-        double mw = 0;
-        double logP = 0;
+        Double mw = null;
+        Double logP = null;
         boolean logPExperimental = false;
         for (RaAdditionalValue val: sim.getAdditionalValues()) {
             if (val.getName().equals("Molecular Weight"))
@@ -269,11 +275,12 @@ public class ToxreadService {
                     logPExperimental = true;
             }
         }
+        String smiles = retrieveSmiles(res, sim);
         return new SimilarMoleculeDTO(
                 new MoleculeDTO(
                         sim.getMolecule().CAS,
-                        retrieveSmiles(res, sim),
-                        retrieveDepiction(retrieveSmiles(res, sim)),
+                        smiles,
+                        retrieveDepiction(smiles),
                         mw,
                         logP,
                         logPExperimental
@@ -301,7 +308,7 @@ public class ToxreadService {
                 else {
                     i = description.indexOf(SMARTS_MARKER_2);
                     if (i >= 0)
-                        smarts= description.substring(i + SMARTS_MARKER_2.length()).trim();
+                        smarts = description.substring(i + SMARTS_MARKER_2.length()).trim();
                 }
             }
         }
@@ -310,13 +317,21 @@ public class ToxreadService {
         try {
             experimentalAccuracy = df3.format(rule.getAlert()
                     .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY));
-        } catch (PropertyNotFoundException e) { experimentalAccuracy = ""; }
+        } catch (PropertyNotFoundException e) {
+            experimentalAccuracy = null;
+            log.warn("Unable to retrieve experimental accuracy for rule {}",
+                    rule.getAlert().getName());
+        }
 
         String experimentalAccuracyBiocide;
         try {
             experimentalAccuracyBiocide = df3.format(rule.getAlert()
                     .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY_BIOCIDES));
-        } catch (PropertyNotFoundException e) { experimentalAccuracyBiocide = ""; }
+        } catch (PropertyNotFoundException e) {
+            experimentalAccuracyBiocide = null;
+            log.warn("Unable to retrieve experimental accuracy (biocides) for rule {}",
+                    rule.getAlert().getName());
+        }
 
         String fisher;
         try {
@@ -325,7 +340,11 @@ public class ToxreadService {
             if (fisherValue < 0.00001)
                 fisher = "< 10e-6";
             else fisher = df5.format(fisherValue);
-        } catch (PropertyNotFoundException e) { fisher = ""; }
+        } catch (PropertyNotFoundException e) {
+            fisher = null;
+            log.warn("Unable to retrieve Fisher value for rule {}",
+                    rule.getAlert().getName());
+        }
 
         return new RuleDTO(
                 rule.getAlert().getName(),
@@ -362,31 +381,44 @@ public class ToxreadService {
     }
 
     private String retrieveSmiles(RaResultsContainer res, iRaObjectSimMolecule sim) {
-        String smiles = "";
+        String smiles;
         try {
             smiles = res.getDBConn().GetStructure(sim.getMolecule().Id).SMILES;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.warn("Error retrieving smiles for similar molecule - {}", e.getMessage());
+            return null;
+        }
         return smiles;
     }
 
     private String retrieveDepiction(String smiles) {
-        if (smiles == null || smiles.isEmpty()) return "";
+        if (smiles == null || smiles.isEmpty()) return null;
         StructureDiagramGenerator sdg = new StructureDiagramGenerator();
         try {
             sdg.setMolecule(SmilesMolecule.Convert(smiles).GetStructure());
-        } catch (InvalidMoleculeException e) {}
-        try { sdg.generateCoordinates(); } catch (CDKException e) { }
+        } catch (InvalidMoleculeException e) {
+            log.warn("Unable to generate depiction for molecule {} - invalid molecule", smiles);
+            return null;
+        }
+        try { sdg.generateCoordinates(); } catch (CDKException e) {
+            log.warn("Unable to generate coordinates for molecule depiction - {}", e.getMessage());
+            return null;
+        }
         IAtomContainer mol = sdg.getMolecule();
         BufferedImage image;
         try {
             image = Depiction.DepictMolecule(mol, imgWidth, imgHeight);
         } catch (CDKException | GenericFailureException e) {
-            return new String();
+            log.warn("Unable to generate depiction for molecule {} - {}", smiles, e.getMessage());
+            return null;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", baos);
-        } catch (IOException e) { }
+        } catch (IOException e) {
+            log.warn("Unable to generate depiction for molecule {} - {}", smiles, e.getMessage());
+            return null;
+        }
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 }

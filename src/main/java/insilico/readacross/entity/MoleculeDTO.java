@@ -11,7 +11,7 @@ public class MoleculeDTO {
     private String cas;
     private String smiles;
     private String image;
-    private double mw;
-    private double logP;
+    private Double mw;
+    private Double logP;
     private boolean logPExperimental;
 }

@@ -53,6 +53,9 @@ public class ToxreadService {
     private static final String SMARTS_MARKER_1 = "defined by the SMARTS:";
     private static final String SMARTS_MARKER_2 = "defined by SMARTS:";
 
+    java.text.DecimalFormat df3;
+    java.text.DecimalFormat df5;
+
     private iDBConnector DBConn;
 
     @PostConstruct
@@ -72,6 +75,12 @@ public class ToxreadService {
             log.error("Unable to open database - {}", e.getMessage());
             throw new RaException("Unable to open database");
         }
+
+        DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
+        InternationalSymbols.setDecimalSeparator('.');
+        df3 = new java.text.DecimalFormat("0.###", InternationalSymbols);
+        df5 = new java.text.DecimalFormat("0.#####", InternationalSymbols);
+
     }
 
     public EndpointsResponse retrieveEndpoints() {
@@ -220,7 +229,7 @@ public class ToxreadService {
                     break;
                 case RaObject.RA_OBJECT_RULE:
                     iRaObjectRule rule = (iRaObjectRule) node;
-                    RuleDTO ruleDTO = parseRule(rule);
+                    RuleDTO ruleDTO = parseRule(res, rule);
                     rules.add(ruleDTO);
                     break;
                 case RaObject.RA_OBJECT_CONNECTOR:
@@ -290,60 +299,21 @@ public class ToxreadService {
         );
     }
 
-    private RuleDTO parseRule(iRaObjectRule rule) {
-        DecimalFormatSymbols InternationalSymbols = new DecimalFormatSymbols();
-        InternationalSymbols.setDecimalSeparator('.');
-        java.text.DecimalFormat df3 =
-                new java.text.DecimalFormat("0.###", InternationalSymbols);
-        java.text.DecimalFormat df5 =
-                new java.text.DecimalFormat("0.#####", InternationalSymbols);
+    private RuleDTO parseRule(RaResultsContainer res, iRaObjectRule rule) {
+        String smarts = retrieveSmarts(rule);
+        String experimentalAccuracy = retrieveExpAccuracy(rule);
+        String experimentalAccuracyBiocide = retrieveExpAccuracyBiocides(rule);
+        String fisher = retrieveFisher(rule);
+        List<SimilarMoleculeDTO> similarMolecules = new ArrayList<>();
+        InterpolationDTO interpolationDTO = null;
 
-        String smarts = rule.getAlert().getSMARTS();
-        if (smarts == null || smarts.isEmpty()) {
-            String description = rule.getAlert().getDescription();
-            if (description != null) {
-                int i = description.indexOf(SMARTS_MARKER_1);
-                if (i >= 0)
-                    smarts = description.substring(i + SMARTS_MARKER_1.length()).trim();
-                else {
-                    i = description.indexOf(SMARTS_MARKER_2);
-                    if (i >= 0)
-                        smarts = description.substring(i + SMARTS_MARKER_2.length()).trim();
-                }
-            }
-        }
-
-        String experimentalAccuracy;
-        try {
-            experimentalAccuracy = df3.format(rule.getAlert()
-                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY));
-        } catch (PropertyNotFoundException e) {
-            experimentalAccuracy = null;
-            log.warn("Unable to retrieve experimental accuracy for rule {}",
-                    rule.getAlert().getName());
-        }
-
-        String experimentalAccuracyBiocide;
-        try {
-            experimentalAccuracyBiocide = df3.format(rule.getAlert()
-                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY_BIOCIDES));
-        } catch (PropertyNotFoundException e) {
-            experimentalAccuracyBiocide = null;
-            log.warn("Unable to retrieve experimental accuracy (biocides) for rule {}",
-                    rule.getAlert().getName());
-        }
-
-        String fisher;
-        try {
-            double fisherValue = rule.getAlert()
-                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_FISHER);
-            if (fisherValue < 0.00001)
-                fisher = "< 10e-6";
-            else fisher = df5.format(fisherValue);
-        } catch (PropertyNotFoundException e) {
-            fisher = null;
-            log.warn("Unable to retrieve Fisher value for rule {}",
-                    rule.getAlert().getName());
+        Iterator<iRaObject> children = rule.getChildren();
+        while (children.hasNext()) {
+            iRaObject node = children.next();
+            if (node.getObjectType() == RaObject.RA_OBJECT_SIM_MOLECULE)
+                similarMolecules.add(parseSimMolecule(res, (iRaObjectSimMolecule) node));
+            else if (node.getObjectType() == RaObject.RA_OBJECT_INTERPOLATION)
+                interpolationDTO = parseInterpolation((iRaObjectInterpolation) node);
         }
 
         return new RuleDTO(
@@ -355,7 +325,9 @@ public class ToxreadService {
                 experimentalAccuracyBiocide,
                 fisher,
                 rule.getShape(),
-                rule.getSizeFactor()
+                rule.getSizeFactor(),
+                similarMolecules,
+                interpolationDTO
         );
     }
 
@@ -416,9 +388,66 @@ public class ToxreadService {
         try {
             ImageIO.write(image, "png", baos);
         } catch (IOException e) {
-            log.warn("Unable to generate depiction for molecule {} - {}", smiles, e.getMessage());
+            log.warn("Unable to write bytearray depiction for molecule {} - {}",
+                    smiles, e.getMessage());
             return null;
         }
         return Base64.getEncoder().encodeToString(baos.toByteArray());
+    }
+
+    private String retrieveSmarts(iRaObjectRule rule) {
+        // retrieve smarts from alert, if present
+        String smarts = rule.getAlert().getSMARTS();
+        if (smarts == null || smarts.isEmpty()) {
+            // retrieve smarts from alert description string
+            String description = rule.getAlert().getDescription();
+            if (description != null) {
+                int i = description.indexOf(SMARTS_MARKER_1);
+                if (i >= 0)
+                    return description.substring(i + SMARTS_MARKER_1.length()).trim();
+                else {
+                    i = description.indexOf(SMARTS_MARKER_2);
+                    if (i >= 0)
+                        return description.substring(i + SMARTS_MARKER_2.length()).trim();
+                    else return null;
+                }
+            } else return null;
+        } else return null;
+    }
+
+    private String retrieveExpAccuracy(iRaObjectRule rule) {
+        try {
+            return df3.format(rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY));
+        } catch (PropertyNotFoundException e) {
+            log.warn("Unable to retrieve experimental accuracy for rule {}",
+                    rule.getAlert().getName());
+            return null;
+        }
+    }
+
+    private String retrieveExpAccuracyBiocides(iRaObjectRule rule) {
+        try {
+            return df3.format(rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_ACCURACY_BIOCIDES));
+        } catch (PropertyNotFoundException e) {
+            log.warn("Unable to retrieve experimental accuracy (biocides) for rule {}",
+                    rule.getAlert().getName());
+            return null;
+        }
+    }
+
+    private String retrieveFisher(iRaObjectRule rule) {
+        try {
+            double fisherValue = rule.getAlert()
+                    .getNumericProperty(InsilicoConstants.KEY_ALERT_VALUE_FISHER);
+            if (fisherValue < 0.00001)
+                return "< 10e-6";
+            else return df5.format(fisherValue);
+        } catch (PropertyNotFoundException e) {
+            log.warn("Unable to retrieve Fisher value for rule {}",
+                    rule.getAlert().getName());
+            return null;
+        }
     }
 }

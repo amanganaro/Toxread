@@ -1,6 +1,6 @@
 package insilico.readacross.type.interfaces;
 
-import insilico.readacross.gui.chart.components.interpolation.InterpolationDataSet;
+import insilico.readacross.entity.interpolation.InterpolationDataSet;
 import insilico.readacross.type.objects.RaAdditionalValue;
 
 

@@ -16,7 +16,7 @@ import insilico.readacross.entity.*;
 import insilico.readacross.exception.InvalidEndpointException;
 import insilico.readacross.exception.InvalidSmilesException;
 import insilico.readacross.exception.RaException;
-import insilico.readacross.gui.chart.components.interpolation.InterpolationDataPoint;
+import insilico.readacross.entity.interpolation.InterpolationDataPoint;
 import insilico.readacross.type.interfaces.*;
 import insilico.readacross.type.objects.RaAdditionalValue;
 import insilico.readacross.type.objects.RaObject;
@@ -403,16 +403,30 @@ public class ToxreadService {
             String description = rule.getAlert().getDescription();
             if (description != null) {
                 int i = description.indexOf(SMARTS_MARKER_1);
-                if (i >= 0)
-                    return description.substring(i + SMARTS_MARKER_1.length()).trim();
+                if (i >= 0) {
+                    smarts = description.substring(i + SMARTS_MARKER_1.length()).trim();
+                    int space = smarts.indexOf(' ');
+                    if (space != -1)
+                        smarts = smarts.substring(0, space);
+                    if (smarts.endsWith("."))
+                        smarts = smarts.substring(0, smarts.length()-1);
+                    return smarts;
+                }
                 else {
                     i = description.indexOf(SMARTS_MARKER_2);
-                    if (i >= 0)
-                        return description.substring(i + SMARTS_MARKER_2.length()).trim();
+                    if (i >= 0) {
+                        smarts = description.substring(i + SMARTS_MARKER_2.length()).trim();
+                        int space = smarts.indexOf(' ');
+                        if (space != -1)
+                            smarts = smarts.substring(0, space);
+                        if (smarts.endsWith("."))
+                            smarts = smarts.substring(0, smarts.length()-1);
+                        return smarts;
+                    }
                     else return null;
                 }
             } else return null;
-        } else return null;
+        } else return smarts;
     }
 
     private String retrieveExpAccuracy(iRaObjectRule rule) {

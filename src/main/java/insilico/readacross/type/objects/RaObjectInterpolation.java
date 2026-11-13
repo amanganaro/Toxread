@@ -1,8 +1,8 @@
 package insilico.readacross.type.objects;
 
-import insilico.readacross.gui.chart.components.interpolation.InterpolationChartCoordinates;
-import insilico.readacross.gui.chart.components.interpolation.InterpolationDataPoint;
-import insilico.readacross.gui.chart.components.interpolation.InterpolationDataSet;
+import insilico.readacross.entity.interpolation.InterpolationChartCoordinates;
+import insilico.readacross.entity.interpolation.InterpolationDataPoint;
+import insilico.readacross.entity.interpolation.InterpolationDataSet;
 import insilico.readacross.type.interfaces.iRaObjectInterpolation;
 
 /**

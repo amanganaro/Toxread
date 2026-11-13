@@ -1,4 +1,4 @@
-package insilico.readacross.gui.chart.components.interpolation;
+package insilico.readacross.entity.interpolation;
 
 /**
  *

@@ -16,7 +16,7 @@ import insilico.readacross.entity.*;
 import insilico.readacross.exception.InvalidEndpointException;
 import insilico.readacross.exception.InvalidSmilesException;
 import insilico.readacross.exception.RaException;
-import insilico.readacross.gui.chart.components.interpolation.InterpolationDataPoint;
+import insilico.readacross.entity.interpolation.InterpolationDataPoint;
 import insilico.readacross.type.interfaces.*;
 import insilico.readacross.type.objects.RaAdditionalValue;
 import insilico.readacross.type.objects.RaObject;

@@ -1,9 +1,6 @@
 
 package insilico.readacross.calculation.endpoints;
 
-import insilico.core.alerts.AlertBlock;
-import insilico.core.alerts.AlertEncoding;
-import insilico.core.alerts.AlertList;
 import insilico.core.molecule.InsilicoMolecule;
 import insilico.core.molecule.conversion.SmilesMolecule;
 import insilico.core.similarity.ScreeningFingerprint;
@@ -11,7 +8,6 @@ import insilico.core.similarity.SimilarityDescriptorsBuilder;
 import insilico.core.tools.utils.GeneralUtilities;
 import insilico.readacross.calculation.endpoints.utils.RaColorGradient;
 import insilico.core.alerts.iAlertBlock;
-import insilico.readacross.database.DBConnector;
 import insilico.readacross.database.iDBConnector;
 import insilico.readacross.database.objects.dbDataType;
 import insilico.readacross.database.objects.dbEndpoint;

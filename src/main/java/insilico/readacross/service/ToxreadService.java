@@ -403,12 +403,22 @@ public class ToxreadService {
             String description = rule.getAlert().getDescription();
             if (description != null) {
                 int i = description.indexOf(SMARTS_MARKER_1);
-                if (i >= 0)
-                    return description.substring(i + SMARTS_MARKER_1.length()).trim();
+                if (i >= 0) {
+                    smarts = description.substring(i + SMARTS_MARKER_1.length()).trim();
+                    int space = smarts.indexOf(' ');
+                    if (space != -1)
+                        return smarts.substring(0, space);
+                    return smarts;
+                }
                 else {
                     i = description.indexOf(SMARTS_MARKER_2);
-                    if (i >= 0)
-                        return description.substring(i + SMARTS_MARKER_2.length()).trim();
+                    if (i >= 0) {
+                        smarts = description.substring(i + SMARTS_MARKER_2.length()).trim();
+                        int space = smarts.indexOf(' ');
+                        if (space != -1)
+                            return smarts.substring(0, space);
+                        return smarts;
+                    }
                     else return null;
                 }
             } else return null;

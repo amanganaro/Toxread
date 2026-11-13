@@ -407,7 +407,9 @@ public class ToxreadService {
                     smarts = description.substring(i + SMARTS_MARKER_1.length()).trim();
                     int space = smarts.indexOf(' ');
                     if (space != -1)
-                        return smarts.substring(0, space);
+                        smarts = smarts.substring(0, space);
+                    if (smarts.endsWith("."))
+                        smarts = smarts.substring(0, smarts.length()-1);
                     return smarts;
                 }
                 else {
@@ -416,13 +418,15 @@ public class ToxreadService {
                         smarts = description.substring(i + SMARTS_MARKER_2.length()).trim();
                         int space = smarts.indexOf(' ');
                         if (space != -1)
-                            return smarts.substring(0, space);
+                            smarts = smarts.substring(0, space);
+                        if (smarts.endsWith("."))
+                            smarts = smarts.substring(0, smarts.length()-1);
                         return smarts;
                     }
                     else return null;
                 }
             } else return null;
-        } else return null;
+        } else return smarts;
     }
 
     private String retrieveExpAccuracy(iRaObjectRule rule) {

@@ -84,7 +84,7 @@ public abstract class RaEndpoint {
      * @return true if a prediction has made
      */
     public String DoPrediction(RaObjectRootMolecule Root)  throws GenericFailureException {
-        return "Overall assessmnet: NOT AVAILABLE";
+        return "Overall assessment: NOT AVAILABLE";
     }
 
     /**

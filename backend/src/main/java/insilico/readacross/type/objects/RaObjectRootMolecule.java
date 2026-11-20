@@ -26,7 +26,7 @@ public class RaObjectRootMolecule extends RaObject implements iRaObjectRootMolec
         Molecule = null;
         AdditionalValues = new ArrayList<>();
         MolColor = Color.GRAY;
-        Prediction = "Overall assessmnet: NOT AVAILABLE";
+        Prediction = "Overall assessment: NOT AVAILABLE";
     }
 
     @Override

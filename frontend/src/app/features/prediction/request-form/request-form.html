@@ -1,0 +1,53 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="form">
+  <label>
+    SMILES
+    <input type="text" formControlName="smiles" placeholder="e.g. c1ccccc1O" autocomplete="off" />
+    @if (form.controls.smiles.touched && form.controls.smiles.invalid) {
+      <span class="error">Enter a SMILES string (no spaces).</span>
+    }
+  </label>
+
+  <label>
+    Endpoint
+    <select formControlName="endpoint">
+      @switch (endpointsState().status) {
+        @case ('loading') {
+          <option value="" disabled>Loading endpoints…</option>
+        }
+        @case ('error') {
+          <option value="" disabled>Unable to load endpoints</option>
+        }
+        @default {
+          <option value="" disabled>Select an endpoint</option>
+        }
+      }
+      @if (endpointsState(); as s) {
+        @if (s.status === 'ready') {
+          @for (ep of s.endpoints; track ep) {
+            <option [value]="ep">{{ ep }}</option>
+          }
+        }
+      }
+    </select>
+    @if (endpointsState(); as s) {
+      @if (s.status === 'error') {
+        <span class="error">{{ s.message }}</span>
+      }
+    }
+    @if (form.controls.endpoint.touched && form.controls.endpoint.invalid) {
+      <span class="error">Select an endpoint.</span>
+    }
+  </label>
+
+  <label>
+    Number of similar molecules
+    <input type="number" formControlName="numSimilarMolecules" min="1" max="20" />
+    @if (form.controls.numSimilarMolecules.touched && form.controls.numSimilarMolecules.invalid) {
+      <span class="error">Enter a number between 1 and 20.</span>
+    }
+  </label>
+
+  <button type="submit" [disabled]="busy() || endpointsState().status !== 'ready'">
+    {{ busy() ? 'Computing…' : 'Compute' }}
+  </button>
+</form>

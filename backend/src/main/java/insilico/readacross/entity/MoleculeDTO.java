@@ -14,4 +14,5 @@ public class MoleculeDTO {
     private Double mw;
     private Double logP;
     private boolean logPExperimental;
+    private float[] color;
 }

@@ -267,7 +267,8 @@ public class ToxreadService {
                 retrieveDepiction(root.getMolecule().GetSMILES()),
                 mw,
                 logP,
-                logPExperimental
+                logPExperimental,
+                root.getMoleculeColor().getRGBColorComponents(null)
         );
     }
 
@@ -292,7 +293,8 @@ public class ToxreadService {
                         retrieveDepiction(smiles),
                         mw,
                         logP,
-                        logPExperimental
+                        logPExperimental,
+                        sim.getMoleculeColor().getRGBColorComponents(null)
                 ),
                 sim.getSimilarity(),
                 sim.getFormattedExperimentalValue()
